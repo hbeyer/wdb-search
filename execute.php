@@ -1,0 +1,12 @@
+<?php
+
+set_time_limit(600);
+require('vendor/autoload.php');
+require('functions/auxiliaryFunctions.php');
+
+$edition = new edition('000228', 'christian2');
+$repository = new index_repository;
+$edition->extractIndexUnits($repository);
+$repository->serializeSolrXML();
+
+?>
