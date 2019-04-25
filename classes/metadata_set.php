@@ -9,6 +9,7 @@ class metadata_set {
 	private $simpleFields = array(
 		'title' => '//titleStmt/title',
 		'date' => '//titleStmt/title/date/@when',
+		'funder' => '//titleStmt/funder'
 	);
 	private $personFields = array(
 		'name' => 'descendant::name',

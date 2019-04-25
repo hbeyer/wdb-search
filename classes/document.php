@@ -2,31 +2,30 @@
 
 class document {
 
+    public $id;
     public $url;
-    public $pathMain;
-    public $pathXML;
+    public $urlMain;
+    public $urlXML;
     protected $html = '';
     public $header = '';
     public $indexUnits = array();
     public $errorMessages = array();
 
-    function __construct($url, $pathMain = '', $pathXML = '') {     
+    function __construct($url, $urlMain = '', $urlXML = '') {     
         $this->url = $url;
-        $this->pathMain = $pathMain;
-        $this->pathXML = $pathXML;
+        $this->urlMain = $urlMain;
+        $this->urlXML = $urlXML;
     }
 
-    public function load() {
+    public function load($cached = true) {
         $this->getContent();
         $this->getHeader();
     }
 
     public function getContent() {
-
     }
 
     public function makeIndexUnits($metadataSet = null) {
-        
     }
 
     protected function makeAssocAName($prefix = '') {
@@ -35,11 +34,16 @@ class document {
         return($index);
     }
 
-    public function getHeader() {
-        if (!$this->pathXML) {
+    public function getHeader($cached = true) {
+        if (!$this->urlXML) {
             return;
         }
-        $string = file_get_contents($this->pathXML);
+        $pathCache = 'cache/xml/'.$this->id.'.xml';
+        if ($cached == true and file_exists($pathCache)) {
+            $this->header = file_get_contents($pathCache);
+            return;
+        }
+        $string = file_get_contents($this->urlXML);
         $doc = new DOMDocument();
         $doc->loadXML($string);
         unset($string);
@@ -47,6 +51,7 @@ class document {
         $this->header = $doc->saveXML($headerNode);
         // Das Folgende ist notwendig, weil der nicht definierte Namespace xi sonst beim erneuten Laden in ein DOMDocument eine Fehlermeldung hervorrufft
         $this->header = preg_replace('~<xi:include [^>]+>~', '', $this->header);
+        file_put_contents($pathCache, $this->header);
      }
 
 }
