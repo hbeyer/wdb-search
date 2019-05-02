@@ -4,7 +4,7 @@ class document_loader_c2 extends document_loader {
 
 	private $months = array(
 	    '1621_11',
-	    '1621_12'/*, 
+	    '1621_12', 
 	    '1622_01',
 	    '1622_02', 
 	    '1622_10', 
@@ -77,7 +77,7 @@ class document_loader_c2 extends document_loader {
 	    '1637_05',
 	    '1637_06',
 	    '1637_07',
-	    '1637_08'*/
+	    '1637_08'
     );
 
     public function getDocuments() {

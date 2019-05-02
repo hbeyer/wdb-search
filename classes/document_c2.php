@@ -11,7 +11,7 @@ class document_c2 extends document {
         $string = file_get_contents($this->urlMain);
         $doc = new DOMDocument();
         $doc->loadHTML($string, LIBXML_NOERROR);
-        unset($string);        
+        unset($string);
         $xpath = new DOMXpath($doc);
         $contentNode = $xpath->query("//div[@class='content']")->item(0);
         $this->html = $doc->saveHTML($contentNode);
@@ -19,7 +19,7 @@ class document_c2 extends document {
     }
 
     public function makeIndexUnits($metadataSet = null) {
-        $assocIndex = $this->makeAssocAName($prefix = 'hd');
+        $assocIndex = $this->makeAssocByMilestone('~<a name="(hd[0-9]+)">\s?</a>~');
         $assocIndex1 = processText($assocIndex);
         $assocIndex2 = processText($assocIndex, true);
         foreach ($assocIndex1 as $key => $value) {
@@ -36,7 +36,6 @@ class document_c2 extends document {
         $this->html = '';
         return($this->indexUnits);
     }
-
 
 }
 

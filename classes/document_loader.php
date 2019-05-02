@@ -5,30 +5,20 @@ class document_loader {
     public $edoc;
     private $mets;
     
-
-    function __construct($edoc) {
+    function __construct($edoc, $mets = '') {
         $this->edoc = $edoc;
+        $this->mets = $mets;
     }
 
-    function getDocuments() {
-    	$documents = array();
-        // loadDocumentsMETS() einbauen
-        return($documents);
+    public function getDocuments() {
     }
 
-    // Hierfür muss die Logik der METS-Datei verstanden sein
-    private function loadDocumentsMETS() {
+    protected function loadMETSDOM() {
         $string = file_get_contents($this->mets);
         $dom = new DOMDocument();
         $dom->loadXML($string);
         unset($string);
-        $nodes = $dom->getElementsByTagNameNS('http://www.loc.gov/METS/', 'behavior');
-        foreach ($nodes as $node) {
-            foreach ($node->attributes as $attrNode) {
-                if ($attrNode->nodeName == '')
-                echo $attrNode->nodeName.': '.$attrNode->nodeValue."\r\n";
-            }
-        }
+        return($dom);
     }
 
 

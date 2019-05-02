@@ -1,20 +1,5 @@
 <?php
 
-function convertSplitArray($array, $prefix = '') {
-	$result = array('#' => array_shift($array));
-	$key = null;
-	foreach ($array as $value) {
-		if ($key === null) {
-			$key = '#'.$prefix.$value;
-		}
-		else {
-			$result[$key] = $value;
-			$key = null;
-		}
-	}
-	return($result);
-}
-
 function processText($index, $blanks = false) {
 	if ($blanks == true) {
 		$index = array_map('insertAdditionalBlanks', $index);

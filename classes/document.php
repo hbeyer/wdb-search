@@ -18,8 +18,11 @@ class document {
     }
 
     public function load($cached = true) {
-        $this->getContent();
-        $this->getHeader();
+        $this->getContent($cached);
+        $this->getHeader($cached);
+        if ($this->errorMessages != array()) {
+            echo implode("\r\n", $this->errorMessages);
+        }
     }
 
     public function getContent() {
@@ -28,11 +31,38 @@ class document {
     public function makeIndexUnits($metadataSet = null) {
     }
 
-    protected function makeAssocAName($prefix = '') {
-        $pieces = preg_split('~<a name="'.$prefix.'([0-9]+)">\s?</a>~' , $this->html, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
-        $index = convertSplitArray($pieces, $prefix);
+   protected function makeAssocByMilestone($delimiterExpr) {
+        $pieces = preg_split($delimiterExpr, $this->html, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+        $index['#'] = array_shift($pieces);
+        $key = null;
+        foreach ($pieces as $value) {
+            if ($key === null) {
+                $key = '#'.$value;
+            }
+            else {
+                $index[$key] = $value;
+                $key = null;
+            }
+        }
         return($index);
-    }
+    }    
+
+    //Auf protected umstellen
+    public function makeAssocByElement($tagName, $attrName, $filter) {
+        $index = array();
+        $dom = new DOMDocument;
+        $dom->loadHTML($this->html);
+        $nodes = $dom->getElementsByTagName($tagName);
+        foreach ($nodes as $node) {
+            $attributeNodes = $node->attributes;
+            foreach ($attributeNodes as $attributeNode) {
+                if ($attributeNode->nodeName == $attrName and $filter($attributeNode->nodeValue) == true) {
+                    $index['#'.$attributeNode->nodeValue] = $dom->saveHTML($node);
+                }
+            }
+        }
+        return($index);
+    }    
 
     public function getHeader($cached = true) {
         if (!$this->urlXML) {
@@ -44,13 +74,19 @@ class document {
             return;
         }
         $string = file_get_contents($this->urlXML);
+        if (!$string) {
+            $this->errorMessages[] = $this->urlXML.' konnte nicht geladen werden';
+            return;
+        }
         $doc = new DOMDocument();
-        $doc->loadXML($string);
+        $doc->loadXML($string, LIBXML_NOERROR);
         unset($string);
         $headerNode = $doc->getElementsByTagName('teiHeader')->item(0);
         $this->header = $doc->saveXML($headerNode);
         // Das Folgende ist notwendig, weil der nicht definierte Namespace xi sonst beim erneuten Laden in ein DOMDocument eine Fehlermeldung hervorrufft
         $this->header = preg_replace('~<xi:include [^>]+>~', '', $this->header);
+        //$this->header = preg_replace('~<listPerson .+</listPerson>~', '', $this->header);
+        //$this->header = preg_replace('~<listBibl .+</listBibl>~', '', $this->header);
         file_put_contents($pathCache, $this->header);
      }
 
