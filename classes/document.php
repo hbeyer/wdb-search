@@ -79,7 +79,7 @@ class document {
             return;
         }
         $doc = new DOMDocument();
-        $doc->loadXML($string, LIBXML_NOERROR);
+        $doc->loadXML($string, LIBXML_NOERROR|LIBXML_NOWARNING);
         unset($string);
         $headerNode = $doc->getElementsByTagName('teiHeader')->item(0);
         $this->header = $doc->saveXML($headerNode);

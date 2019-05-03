@@ -16,7 +16,8 @@ class metadata_set {
 		'nameLink' => 'descendant::nameLink',
 		'forename' => 'descendant::forename',
 		'surname' => 'descendant::surname',
-		'resp' => 'descendant::resp'
+		'resp' => 'descendant::resp',
+		'fullName' => 'self::*'
 	);
 
 	function __construct($header) {
@@ -27,7 +28,7 @@ class metadata_set {
 		foreach ($this->simpleFields as $fieldName => $path) {
 			$nodes = $this->xp->query($path);
 			foreach ($nodes as $node) {
-				$field = new field($fieldName, $node->textContent);
+				$field = new field($fieldName, trim($node->textContent));
 				$this->addField($field);
 			}
 		}
@@ -37,7 +38,6 @@ class metadata_set {
 		$this->xp = null;
 	}
 
-
 	private function addPersons($expr, $role) {
 		$personNodes = $this->xp->query($expr);
 		foreach ($personNodes as $contextNode) {
@@ -45,7 +45,7 @@ class metadata_set {
 			foreach ($this->personFields as $field => $path) {
 				$singleNode = $this->xp->query($path, $contextNode)->item(0);
 				if ($singleNode) {
-					$person->$field = $singleNode->textContent;
+					$person->$field = trim($singleNode->textContent);
 				}
 			}
 			$metadataField = new field($role, $person->__toString());

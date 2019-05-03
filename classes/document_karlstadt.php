@@ -23,7 +23,7 @@ class document_karlstadt extends document {
     }
 
     public function makeIndexUnits($metadataSet = null) {
-        $index = $this->makeAssocDivID(
+        $index = $this->makeAssocByElement('div', 'id',
             function($id) {
             $exclude = array('content');
             if (in_array($id, $exclude)) { 
@@ -32,16 +32,13 @@ class document_karlstadt extends document {
                 return(true);
             }
         );
-        $assocIndex1 = processText($assocIndex);
-        $assocIndex2 = processText($assocIndex, true);
+        $assocIndex1 = processText($index);
         foreach ($assocIndex1 as $key => $value) {
             $unit = new index_unit($this->urlMain, $key);
             if ($metadataSet != null) {
                 $unit->addMetadataSet($metadataSet);
             }
             $field = new field('fullText', $value);
-            $unit->addField($field);
-            $field = new field('fullText-alt', $assocIndex2[$key]);
             $unit->addField($field);
             $this->indexUnits[] = $unit;
         }
