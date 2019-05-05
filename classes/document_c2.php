@@ -20,8 +20,8 @@ class document_c2 extends document {
 
     public function makeIndexUnits($metadataSet = null) {
         $assocIndex = $this->makeAssocByMilestone('~<a name="(hd[0-9]+)">\s?</a>~');
-        $assocIndex1 = processText($assocIndex);
-        $assocIndex2 = processText($assocIndex, true);
+        $assocIndex1 = $this->processText($assocIndex);
+        $assocIndex2 = $this->processText($assocIndex, true);
         foreach ($assocIndex1 as $key => $value) {
             $unit = new index_unit($this->urlMain, $key);
             if ($metadataSet != null) {

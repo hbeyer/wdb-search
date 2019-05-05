@@ -90,6 +90,40 @@ class document {
         file_put_contents($pathCache, $this->header);
      }
 
+    protected function preprocessText($string) {
+    }
+
+    protected function processText($index, $blanks = false) {
+        if ($blanks == true) {
+            $index = array_map('document::insertAdditionalBlanks', $index);
+        }
+        $index = array_map('strip_tags', $index);
+        $index = array_map('document::removeArrows', $index);
+        $index = array_map('document::normalizeSpace', $index);
+        $index = array_map('trim', $index);
+        return($index);
+    }
+
+    static function normalizeSpace($string) {
+        $result = preg_replace('/\s+/', ' ', $string);
+        return($result);
+    }
+
+    static function insertAdditionalBlanks($string) {
+        $result = strtr($string, array('<a href="javascript:void(0)' => ' <a href="javascript:void(0)'));
+        return($result);
+    }
+
+    static function removeArrows($string) {
+        $translation = array('<' => '', '>' => '', '&lt;' => '', '&gt;' => '');
+        return(strtr($string, $translation));
+    }
+
+    static function removeNarrowArrows($string) {
+        $translation = array('⟨' => '', '⟩' => '');
+        return(strtr($string, $translation));
+    }
+
 }
 
 ?>

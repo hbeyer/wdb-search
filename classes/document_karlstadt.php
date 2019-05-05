@@ -6,9 +6,11 @@ class document_karlstadt extends document {
         $pathCache = 'cache/html/'.$this->id.'.htm';
         if ($cached == true and file_exists($pathCache)) {
             $this->html = file_get_contents($pathCache);
+            $this->html = $this->preprocessText($this->html);
             return;
         }
         $string = file_get_contents($this->urlMain);
+        $string = $this->preprocessText($string);        
         if (!$string) {
             $this->errorMessages[] = $this->urlMain.' konnte nicht geladen werden';
             return;
@@ -32,7 +34,7 @@ class document_karlstadt extends document {
                 return(true);
             }
         );
-        $assocIndex1 = processText($index);
+        $assocIndex1 = $this->processText($index);
         foreach ($assocIndex1 as $key => $value) {
             $unit = new index_unit($this->urlMain, $key);
             if ($metadataSet != null) {
@@ -44,6 +46,11 @@ class document_karlstadt extends document {
         }
         $this->html = '';
         return($this->indexUnits);
+    }
+
+    protected function preprocessText($string) {
+        $string = document::removeNarrowArrows($string);
+        return($string);
     }
 
 
