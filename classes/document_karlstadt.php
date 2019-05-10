@@ -2,40 +2,18 @@
 
 class document_karlstadt extends document {
 
-    public function getContent($cached = true) {
-        $pathCache = 'cache/html/'.$this->id.'.htm';
-        if ($cached == true and file_exists($pathCache)) {
-            $this->html = file_get_contents($pathCache);
-            $this->html = $this->preprocessText($this->html);
-            return;
-        }
-        $string = file_get_contents($this->urlMain);
-        $string = $this->preprocessText($string);        
-        if (!$string) {
-            $this->errorMessages[] = $this->urlMain.' konnte nicht geladen werden';
-            return;
-        }
-        $doc = new DOMDocument();
-        $doc->loadHTML($string, LIBXML_NOERROR);
-        unset($string);
-        $xpath = new DOMXpath($doc);
-        $contentNode = $xpath->query("//div[@id='content']")->item(0);
-        $this->html = $doc->saveHTML($contentNode);
-        file_put_contents($pathCache, $this->html);
-    }
-
     public function makeIndexUnits($metadataSet = null) {
         $index = $this->makeAssocByElement('div', 'id',
             function($id) {
-            $exclude = array('content');
+            $exclude = array('content', 'kritApp', 'FußnotenApparat');
             if (in_array($id, $exclude)) { 
                 return(false); 
             }
                 return(true);
             }
         );
-        $assocIndex1 = $this->processText($index);
-        foreach ($assocIndex1 as $key => $value) {
+        $assocIndex = $this->processText($index);
+        foreach ($assocIndex as $key => $value) {
             $unit = new index_unit($this->urlMain, $key);
             if ($metadataSet != null) {
                 $unit->addMetadataSet($metadataSet);
@@ -47,12 +25,6 @@ class document_karlstadt extends document {
         $this->html = '';
         return($this->indexUnits);
     }
-
-    protected function preprocessText($string) {
-        $string = document::removeNarrowArrows($string);
-        return($string);
-    }
-
 
 }
 

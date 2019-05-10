@@ -25,13 +25,30 @@ class document {
         }
     }
 
-    public function getContent() {
+    public function getContent($cached = true) {
+        $pathCache = 'cache/html/'.$this->id.'.htm';
+        if ($cached == true and file_exists($pathCache)) {
+            $this->html = file_get_contents($pathCache);
+            return;
+        }
+        $string = file_get_contents($this->urlMain);
+        if (strlen($string) < 50) {
+            $this->errorMessages[] = $this->urlMain.' konnte nicht geladen werden';
+            return;
+        }
+        $doc = new DOMDocument();
+        $doc->loadHTML($string, LIBXML_NOERROR);
+        unset($string);
+        $xpath = new DOMXpath($doc);
+        $contentNode = $xpath->query("//div[@id='content']")->item(0);
+        $this->html = $doc->saveHTML($contentNode);
+        file_put_contents($pathCache, $this->html);
     }
 
     public function makeIndexUnits($metadataSet = null) {
     }
 
-   protected function makeAssocByMilestone($delimiterExpr) {
+    protected function makeAssocByMilestone($delimiterExpr) {
         $pieces = preg_split($delimiterExpr, $this->html, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
         $index['#'] = array_shift($pieces);
         $key = null;
@@ -47,11 +64,12 @@ class document {
         return($index);
     }    
 
-    //Auf protected umstellen
-    public function makeAssocByElement($tagName, $attrName, $filter) {
+    protected function makeAssocByElement($tagName, $attrName, $filter) {
+        //Das Folgende dient der Festlegung der Zeichencodierung
+        $this->html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>'.$this->html.'</body></html>';
         $index = array();
         $dom = new DOMDocument;
-        $dom->loadHTML($this->html);
+        $dom->loadHTML($this->html, LIBXML_NOERROR);
         $nodes = $dom->getElementsByTagName($tagName);
         foreach ($nodes as $node) {
             $attributeNodes = $node->attributes;
@@ -74,24 +92,23 @@ class document {
             return;
         }
         $string = file_get_contents($this->urlXML);
-        if (!$string) {
-            $this->errorMessages[] = $this->urlXML.' konnte nicht geladen werden';
+        if (strlen($string) < 50) {
+            $this->errorMessages[] = $this->urlXML." konnte nicht geladen werden\r\n";
             return;
         }
-        $doc = new DOMDocument();
-        $doc->loadXML($string, LIBXML_NOERROR|LIBXML_NOWARNING);
+        $string = preg_replace('~<xi:include [^>]+>~', '', $string);
+        $doc = new DOMHeader;
+        $doc->loadXML($string, LIBXML_NOERROR);
         unset($string);
+        $doc->removeElements(array('listPlace', 'listPerson', 'listBibl'));
         $headerNode = $doc->getElementsByTagName('teiHeader')->item(0);
         $this->header = $doc->saveXML($headerNode);
-        // Das Folgende ist notwendig, weil der nicht definierte Namespace xi sonst beim erneuten Laden in ein DOMDocument eine Fehlermeldung hervorrufft
-        $this->header = preg_replace('~<xi:include [^>]+>~', '', $this->header);
-        //$this->header = preg_replace('~<listPerson .+</listPerson>~', '', $this->header);
-        //$this->header = preg_replace('~<listBibl .+</listBibl>~', '', $this->header);
+        if (strlen($this->header) < 50) {
+            $this->errorMessages[] = $this->id." konnte nicht geladen werden\r\n";
+            return;   
+        }
         file_put_contents($pathCache, $this->header);
      }
-
-    protected function preprocessText($string) {
-    }
 
     protected function processText($index, $blanks = false) {
         if ($blanks == true) {
@@ -115,12 +132,7 @@ class document {
     }
 
     static function removeArrows($string) {
-        $translation = array('<' => '', '>' => '', '&lt;' => '', '&gt;' => '');
-        return(strtr($string, $translation));
-    }
-
-    static function removeNarrowArrows($string) {
-        $translation = array('⟨' => '', '⟩' => '');
+        $translation = array('<' => '', '>' => '', '&lt;' => '', '&gt;' => '', '⟨' => '', '⟩' => '');
         return(strtr($string, $translation));
     }
 

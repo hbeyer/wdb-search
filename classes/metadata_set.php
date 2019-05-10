@@ -21,8 +21,8 @@ class metadata_set {
 	);
 
 	function __construct($header) {
-		$this->doc = new DOMDocument();
-		$this->doc->loadXML($header);
+		$this->doc = new DOMHeader();
+		$this->doc->loadXML($header, LIBXML_NOERROR);
 		unset($header);
 		$this->xp = new DOMXPath($this->doc);
 		foreach ($this->simpleFields as $fieldName => $path) {
