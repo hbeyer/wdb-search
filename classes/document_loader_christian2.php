@@ -1,6 +1,6 @@
 <?php
 
-class document_loader_c2 extends document_loader {
+class document_loader_christian2 extends document_loader {
 
 	private $months = array(
 	    '1621_11',
@@ -83,7 +83,7 @@ class document_loader_c2 extends document_loader {
     public function getDocuments() {
     	$documents = array();
     	foreach ($this->months as $month) {
-    		$doc = new document_c2('http://diglib.hab.de/edoc/ed'.$this->edoc.'/start.htm', 'http://diglib.hab.de/content.php?dir=edoc/ed'.$this->edoc.'&distype=optional&metsID=edoc_ed'.$this->edoc.'_fg_'.$month.'_sm&xml='.$month.'.xml&xsl=tei-transcript.xsl', 'http://diglib.hab.de/edoc/ed'.$this->edoc.'/'.$month.'.xml');
+    		$doc = new document_christian2('http://diglib.hab.de/edoc/ed'.$this->edoc.'/start.htm', 'http://diglib.hab.de/content.php?dir=edoc/ed'.$this->edoc.'&distype=optional&metsID=edoc_ed'.$this->edoc.'_fg_'.$month.'_sm&xml='.$month.'.xml&xsl=tei-transcript.xsl', 'http://diglib.hab.de/edoc/ed'.$this->edoc.'/'.$month.'.xml');
     		$doc->id = $this->edoc.'-'.$month;
     		$documents[] = $doc;
     	}

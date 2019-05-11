@@ -16,11 +16,14 @@ class edition {
         }
         $this->type = $type;
         if ($this->type == 'christian2') {
-            $loader = new document_loader_c2($this->edoc);
+            $loader = new document_loader_christian2($this->edoc);
         }
         elseif ($this->type == 'karlstadt') {
         	$loader = new document_loader_karlstadt($this->edoc, $this->mets);
         }
+        elseif ($this->type == 'zenturien') {
+        	$loader = new document_loader_zenturien($this->edoc, $this->mets);
+        }        
         elseif ($this->type == 'default') {
             $loader = new document_loader($this->edoc);
         }
