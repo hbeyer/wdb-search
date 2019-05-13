@@ -6,6 +6,7 @@ class metadata_set {
 	private $xp;
 
 	public $content = array();
+	
 	private $simpleFields = array(
 		'title' => '//titleStmt/title',
 		'date' => '//titleStmt/title/date/@when',
@@ -17,7 +18,7 @@ class metadata_set {
 		'forename' => 'descendant::forename',
 		'surname' => 'descendant::surname',
 		'resp' => 'descendant::resp',
-		'fullName' => 'self::*'
+		//'fullName' => 'self::*'
 	);
 
 	function __construct($header) {
@@ -28,7 +29,7 @@ class metadata_set {
 		foreach ($this->simpleFields as $fieldName => $path) {
 			$nodes = $this->xp->query($path);
 			foreach ($nodes as $node) {
-				$field = new field($fieldName, trim($node->textContent));
+				$field = new field($fieldName, document::normalizeSpace($node->textContent));
 				$this->addField($field);
 			}
 		}
@@ -53,7 +54,7 @@ class metadata_set {
 		}
 	}
 
-	private function addField(field $field) {
+	public function addField(field $field) {
 		if ($field->valid == false) {
 			return;
 		}

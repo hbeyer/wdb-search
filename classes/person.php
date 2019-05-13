@@ -21,6 +21,9 @@ class person {
 		elseif($this->fullName) {
 			$return = $this->fullName;
 		}
+		elseif ($this->name) {
+			$return = $this->name;
+		}
 		if ($this->resp) {
 			$return = $this->resp.' '.$return;
 		}

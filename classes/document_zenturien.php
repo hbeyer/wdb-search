@@ -22,28 +22,28 @@ class document_zenturien extends document {
     }
 
     public function makeIndexUnits($metadataSet = null) {
-        $index = $this->makeAssocByElement('div', 'id',
-            function($id) {
-            $exclude = array('content', 'kritApp', 'FußnotenApparat');
-            if (in_array($id, $exclude)) { 
-                return(false); 
-            }
-                return(true);
-            }
-        );
-        $assocIndex = $this->processText($index);
-        foreach ($assocIndex as $key => $value) {
-            $unit = new index_unit($this->urlMain, $key);
-            if ($metadataSet != null) {
-                $unit->addMetadataSet($metadataSet);
-            }
-            $field = new field('fullText', $value);
-            $unit->addField($field);
-            $this->indexUnits[] = $unit;
+    	$this->preprocessText();
+
+    	$unit = new index_unit($this->urlMain, '#');
+
+        if ($metadataSet != null) {
+            $unit->addMetadataSet($metadataSet);
         }
-        $this->html = '';
-        return($this->indexUnits);
+
+	    //$unit->addHeadings($this, true);
+
+    	$index = array('#' => $this->html);
+    	$fullText = $this->processText($index)['#'];
+    	$field = new field('fullText', $fullText);
+		$unit->addField($field);
+
+        $this->indexUnits[] = $unit;
     }
+
+    protected function preprocessText() {
+    	$this->html = document::convertEt($this->html);
+    	$this->html = strtr($this->html, array('<span class="fnz">' => ' <span class="fnz">', '<br>' => ' '));
+    } 
 
 }
 

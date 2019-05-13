@@ -25,6 +25,21 @@ class index_unit {
         }
         return($this->url.$this->hash);
     }
+
+    // Diese Lösung greift nur im Fall, dass das ganze Dokument eine Indexeinheit ist
+    public function addHeadings($document, $blanks = false) {
+        $headings = $document->extractHeadings($document->html, function($headings) { 
+            $headings = array_diff($headings, array('Kritischer Apparat', 'Sachapparat'));
+            return($headings); 
+        });
+        if (is_array($headings)) {
+            $headings = $document->processText($headings, $blanks);
+            foreach ($headings as $heading) {
+                $field = new field('heading', $heading);
+                $this->addField($field);
+            }
+        }        
+    }    
     
 }
 

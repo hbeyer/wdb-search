@@ -6,7 +6,7 @@ class document {
     public $url;
     public $urlMain;
     public $urlXML;
-    protected $html = '';
+    public $html = '';
     public $header = '';
     public $indexUnits = array();
     public $errorMessages = array();
@@ -110,7 +110,10 @@ class document {
         file_put_contents($pathCache, $this->header);
      }
 
-    protected function processText($index, $blanks = false) {
+    protected function preprocessText() {
+    }
+
+    public function processText($index, $blanks = false) {
         if ($blanks == true) {
             $index = array_map('document::insertAdditionalBlanks', $index);
         }
@@ -134,6 +137,20 @@ class document {
     static function removeArrows($string) {
         $translation = array('<' => '', '>' => '', '&lt;' => '', '&gt;' => '', '⟨' => '', '⟩' => '');
         return(strtr($string, $translation));
+    }
+
+    static function convertEt($string) {
+        $translation = array('&amp;' => 'et');
+        return(strtr($string, $translation));
+    }
+
+    public function extractHeadings($string, $filter) {
+        preg_match_all('~<h[1-6][^>]?>(.+)</h[1-6]>~', $this->html, $hits);
+        if (!empty($hits[1])) {
+            $headings = $filter($hits[1]);
+            return($headings);
+        }
+        return(null);
     }
 
 }
