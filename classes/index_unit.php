@@ -2,6 +2,7 @@
 
 class index_unit {
 
+    public $id;
     private $url;
     private $hash;
     public $content = array();
@@ -9,6 +10,8 @@ class index_unit {
     function __construct($url, $hash) {
     	$this->url = $url;
     	$this->hash = $hash;
+        $this->makeID();
+        $this->addField(new field('id', $this->id));
     }
 
     public function addField(field $field) {
@@ -24,6 +27,10 @@ class index_unit {
             $this->hash = '#'.$this->hash;
         }
         return($this->url.$this->hash);
+    }
+
+    private function makeID() {
+        $this->id = md5($this->url).$this->hash;
     }
 
     // Diese Lösung greift nur im Fall, dass das ganze Dokument eine Indexeinheit ist

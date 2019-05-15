@@ -62,7 +62,7 @@ $request = new solr_request($_GET);
                             <div class="input-group">
                                 <input type="text" name="value" class="form-control" placeholder="Suchwort" <?php if ($_GET['value']) { echo 'value="'.$_GET['value'].'"'; } ?>>
                                 <div class="input-group-btn">
-<a href="search.php?field=fullText&value=<?php foreach ($_GET['owner'] as $gnd) echo '&owner[]='.$gnd; ?>" class="btn btn-default" role="button" title="Suche zurücksetzen"><i class="glyphicon glyphicon-remove"></i></a>
+<a href="search.php?field=fullText&value=<?php foreach ($_GET['edoc'] as $gnd) echo '&edoc[]='.$gnd; ?>" class="btn btn-default" role="button" title="Suche zurücksetzen"><i class="glyphicon glyphicon-remove"></i></a>
                                     <button class="btn btn-default" type="submit" title="Suche ausführen"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                             </div>
@@ -76,11 +76,11 @@ $request = new solr_request($_GET);
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
-                            <select multiple class="form-control" name="owner[]" size="5">
+                            <select multiple class="form-control" name="edoc[]" size="5">
                                 <?php
                                 foreach ($request->filters as $field => $label) {
                                     $selected = '';
-                                    if (in_array($field, $_GET['owner'])) {
+                                    if (in_array($field, $_GET['edoc'])) {
                                         $selected = ' selected';
                                     }
                                     echo '<option value="'.$field.'"'.$selected.'>'.$label.'</option>';
@@ -95,6 +95,9 @@ $request = new solr_request($_GET);
             <hr />            
             <div class="row">
                 <div class="col-sm-8">
+                    <?php //echo $request->url; ?>
+                    <?php //var_dump($request); ?>
+                    <?php //var_dump($_GET); ?>
                 <?php
                     if ($request->errorMessage) {
                         echo '<div class="alert alert-warning">'.$request->errorMessage.'</div>';

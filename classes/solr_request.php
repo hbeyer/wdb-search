@@ -22,10 +22,10 @@ class solr_request extends solr_interaction {
                 $value .= '~';
             }
             $this->queries[] = array('field' => htmlspecialchars($get['field']), 'value' => $value);
-            if (isset($get['owner'])) {
-                if (in_array('all', $get['owner']) == false)  {
-                    foreach ($get['owner'] as $gnd) {
-                        $this->filters_active[] = $gnd;
+            if (isset($get[$this->filter_field])) {
+                if (in_array('all', $get[$this->filter_field]) == false)  {
+                    foreach ($get[$this->filter_field] as $edoc) {
+                        $this->filters_active[] = $edoc;
                     }
                 }
             }
@@ -50,12 +50,13 @@ class solr_request extends solr_interaction {
         }
                 
         $filterString = '';
-        if (isset($this->filters[0])) {
+        if (isset($this->filters_active[0])) {
             $filters = array();
-            foreach ($this->filters as $gnd) {
-                $filters[] = $this->filter_field.':'.$gnd;
+            foreach ($this->filters_active as $edoc) {
+                $filters[] = $this->filter_field.':'.$edoc;
             }
             $filterString = 'fq='.implode(urlencode(' OR '), $filters).'&';
+            unset($filters);
         }
 
         $queryArray = array();
@@ -85,7 +86,7 @@ class solr_request extends solr_interaction {
         $facetString = implode('&', $facetArray);
         $facetString .= '&facet=on&';
 
-        return(solr_request::BASE_SELECT.$facetString.$filterString.$queryString.$start.'&wt='.solr_request::FORMAT);
+        return(solr_request::BASE_SELECT.$facetString.$filterString.$queryString.$start.'&hl=true&hl.snippets=10&wt='.solr_request::FORMAT);
 
     }
 
@@ -103,8 +104,8 @@ class solr_request extends solr_interaction {
                 return(false);
             }
         }
-        foreach ($this->filters_active as $gnd) {
-            if (isset($this->filters[$gnd]) == false) {
+        foreach ($this->filters_active as $edoc) {
+            if (isset($this->filters[$edoc]) == false) {
                 $this->errorMessage = 'Unzulässiger Filter: '.$gnd;
                 return(false);
             }

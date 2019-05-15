@@ -18,6 +18,16 @@ function correctURL($url) {
     return($url);
 }
 
+// Legt fest, ob eine von Solr übermittelte Facette angezeigt werden soll
+function hasMatches($facetArray) {
+    foreach ($facetArray as $value => $count) {
+        if ($count > 0) {
+            return(true);
+        }
+    }
+    return(false);
+}
+
 
 // Zur Erzeugung des Footers wird templates/footer.php direkt eingebunden
 
@@ -65,15 +75,7 @@ function replaceUml($string) {
 	return($string);
 }
 
-// Legt fest, ob eine von Solr übermittelte Facette angezeigt werden soll
-function hasMatches($facetArray) {
-    foreach ($facetArray as $value => $count) {
-        if ($count > 0) {
-            return(true);
-        }
-    }
-    return(false);
-}
+
 */
 
 ?>

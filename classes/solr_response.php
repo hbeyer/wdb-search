@@ -30,7 +30,7 @@ class solr_response extends solr_interaction {
     }
 
     public function displayResults() {
-        //include('templates/docList.php');
+        include('templates/docList.php');
     }
     
     public function displayFacets() {
@@ -59,8 +59,8 @@ class solr_response extends solr_interaction {
         if ($_GET['fuzzy'] == 'yes') { 
             $result .= 'fuzzy=yes&'; 
         }
-        foreach ($_GET['owner'] as $gnd) {
-            $result .= 'owner[]='.$gnd.'&';
+        foreach ($_GET['edoc'] as $edoc) {
+            $result .= 'edoc[]='.$edoc.'&';
         }
         $refines = array_unique($_GET['refine']);
         foreach ($refines as $refine) {          
